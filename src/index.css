@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+
+@layer {
+    .bg-hero{
+        background-image: url('/home.jpg');
+    }
+}
 @theme {
-    --background-image: url('public/home-bg.png');
+    --font-family-main: "Inter", Helvetica, Arial, sans-serif;
 }

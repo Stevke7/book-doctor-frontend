@@ -4,6 +4,7 @@ import {RouterProvider, createBrowserRouter,} from "react-router-dom";
 import Home from "./pages/Home.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Register from "./pages/Register.tsx";
+import "./index.css"
 
 function App() {
 const router = createBrowserRouter([
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
 
 
   return (
-    <AuthProvider>
+    <AuthProvider >
         <RouterProvider router={router}/>
     </AuthProvider>
   )

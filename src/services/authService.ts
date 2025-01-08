@@ -1,23 +1,47 @@
 import api from "./api";
+import {AxiosError} from "axios";
 import {LoginCredentials, RegisterCredentials, AuthResponse} from "../types/auth.types.ts";
 
 export const authService = {
     login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
         try{
             const {data} = await api.post<AuthResponse>('/users/login', credentials);
+
+            if(!data || !data.token || !data.user || !data.user.role) {
+                throw new Error("Invalid response from server");
+            }
             console.log({data});
+
             return data;
         } catch(error){
-            if(error instanceof AxiosError){
-                throw Error(error.response?.data?.message || 'Login failed.');
+            if(error instanceof AxiosError) {
+                if(error.response?.status === 401){
+                    throw new Error("Invalid email or password");
+                }
+                if(error.response?.status === 404){
+                    throw new Error("User Not Found");
+                }
+                throw new Error(error.response?.data?.message || 'Login failed');
             }
-            throw error;
+            throw new Error("An unexpected error occurred");
         }
 
     },
 
     register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
-        const {data} = await api.post<AuthResponse>('/users/register', credentials);
-        return data;
+        try {
+            const {data} = await api.post<AuthResponse>('/users/register', credentials);
+            if(!data || !data.token || !data.user || !data.user.role) {
+                throw new Error("Invalid response from server");
+            }
+            return data;
+        } catch(error){
+            if(error instanceof AxiosError){
+                throw Error(error.response?.data?.message || 'Register failed.');
+            }
+            throw new Error("An unexpected error occurred");
+        }
+
+
     }
 }

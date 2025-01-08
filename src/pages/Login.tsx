@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
 import {authService} from "../services/authService.ts";
 import {useAuth} from "../context/AuthContext.tsx";
@@ -6,13 +6,23 @@ import {useAuth} from "../context/AuthContext.tsx";
 const Login = () => {
 
     const navigate = useNavigate();
-    const {login} = useAuth();
+    const {login, isAuthenticated, user} = useAuth();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if(isAuthenticated && user) {
+            const dashboardPath = user.role === 'doctor'
+                ? '/doctor/dashboard'
+                : '/patient/dashboard';
+            navigate(dashboardPath);
+        }
+    }, [isAuthenticated, user, navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -26,13 +36,19 @@ const Login = () => {
 
         try {
             const response = await authService.login(formData);
-            if(!response.token) {
-                throw new Error("Token is invalid");
+
+            console.log('Login response:', response); // Log the entire response
+            console.log('Token from response:', response.token); // Log just the token
+
+            if (!response.user || !response.token || !response.user.role) {
+                throw new Error("Invalid response from server");
             }
             login(response.token);
-            navigate(response.role === 'doctor'? '/doctor/dashboard' : '/patient/dashboard');
+
         } catch (err) {
+            console.error('Login failed', err);
             setError(err instanceof Error ? err.message : 'Invalid Credentials');
+            return;
         } finally {
             setIsLoading(false);
         }
