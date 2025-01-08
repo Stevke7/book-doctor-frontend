@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@theme {
+    --background-image: url('public/home-bg.png');
+}
