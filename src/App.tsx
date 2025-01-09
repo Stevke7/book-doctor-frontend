@@ -5,6 +5,7 @@ import Home from "./pages/Home.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import Register from "./pages/Register.tsx";
 import "./index.css"
+import MakeAnAppointment from "./pages/AppointmentCalendar.tsx";
 
 function App() {
 const router = createBrowserRouter([
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
 
     },
     {
-        path: '/patient/dashboard', element: <Dashboard />
+        path: '/patient/dashboard', element: <MakeAnAppointment />
     },
     {
         path: '/doctor/dashboard', element: <Dashboard />
