@@ -2,10 +2,10 @@ import {AuthProvider} from "./context/AuthContext.tsx";
 import Login from "./pages/Login.tsx";
 import {RouterProvider, createBrowserRouter,} from "react-router-dom";
 import Home from "./pages/Home.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
+import DoctorDashboard from "./pages/DoctorDashboard.tsx";
 import Register from "./pages/Register.tsx";
 import "./index.css"
-import MakeAnAppointment from "./pages/AppointmentCalendar.tsx";
+import MakeAnAppointment from "./pages/PatientDashboard.tsx";
 
 function App() {
 const router = createBrowserRouter([
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         path: '/patient/dashboard', element: <MakeAnAppointment />
     },
     {
-        path: '/doctor/dashboard', element: <Dashboard />
+        path: '/doctor/dashboard', element: <DoctorDashboard />
     }
 
     ]);

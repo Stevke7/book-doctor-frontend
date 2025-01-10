@@ -39,13 +39,13 @@ const AppointmentList = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="space-y-4">
+        <div className="w-full flex flex-col gap-4">
             <h2 className="text-xl font-bold">My Appointments</h2>
             <div className="grid gap-4">
                 {appointments.map((apt: any) => (
                     <div
                         key={apt._id}
-                        className="p-4 border rounded-lg shadow-sm bg-white"
+                        className="p-4  rounded-lg shadow-sm bg-white"
                     >
                         <div className="flex justify-between items-center">
                             <div>
