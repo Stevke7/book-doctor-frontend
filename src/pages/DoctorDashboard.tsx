@@ -104,12 +104,6 @@ const DoctorDashboard = () => {
 		}
 	};
 
-	console.log('Appointment data:', events.map(apt => ({
-		id: apt._id,
-		datetime: apt.datetime,
-		parsedDate: new Date(apt.datetime)
-	})));
-
 	return (
 		<div className="flex flex-col w-full">
 			<ToastContainer
@@ -146,7 +140,7 @@ const DoctorDashboard = () => {
 						</div>
 						<div className="flex flex-row gap-2 p-3 items-center cursor-pointer hover:bg-teal-200 rounded-md">
 							<SettingsOutlined width={40} height={44}/>
-							<p className="text-sm font-medium font-black">Billing</p>
+							<p className="text-sm font-medium font-black">Settings</p>
 						</div>
 					</div>
 					<div className="flex flex-col">
