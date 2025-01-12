@@ -1,55 +1,12 @@
 // services/appointmentService.ts
 import api from './api';
-import {Appointment, Event} from "../types/appointment.types.ts";
+import { Appointment } from "../types/appointment.types";
 
 export const appointmentService = {
+    // Dohvati sve termine
     fetchAppointments: async (): Promise<Appointment[]> => {
-        const response = await fetch('http://localhost:5000/api/appointments', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch Appointments");
-        }
-        return response.json();
-    },
-
-    fetchDoctorAppointments: async (doctorId: string): Promise<Appointment[]> => {
-        const response = await fetch(`http://localhost:5000/api/appointments?doctor=${doctorId}`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch doctor appointments');
-        }
-
-        return response.json();
-    },
-
-    doctorCreateAppointment: async (datetime: string, doctorId: string) : Promise<Appointment> => {
-        const response = await fetch('http://localhost:5000/api/appointments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({datetime, doctor: doctorId})
-        });
-        if(!response.ok) {
-            throw new Error('Failed to create an Appointment');
-        }
-
-        return response.json
-    },
-
-    getAvailableAppointments: async () => {
         try {
-            const {data} = await api.get<Appointment[]>('/appointments');
-            console.log('Available slots',data);
+            const { data } = await api.get('/appointments');
             return data;
         } catch (error) {
             console.error('Error fetching appointments:', error);
@@ -57,52 +14,106 @@ export const appointmentService = {
         }
     },
 
-    bookAppointment: async (appointmentId: string): Promise<Appointment> => {
-        const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}/book`, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }
-        })
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to fetch book appointments');
-        }
-        return response.json();
-    },
-
-    getAppointmentsByDate: async (date: Date) => {
+    // Dohvati termine za određenog doktora
+    fetchDoctorAppointments: async (doctorId: string): Promise<Appointment[]> => {
         try {
-            console.log('Fetching appointments: ', date);
-            const formattedDate = date.toISOString().split('T')[0];
-            const { data } = await api.get(`/appointments?date=${formattedDate}&status=FREE`);
+            const { data } = await api.get(`/appointments`, {
+                params: { doctor: doctorId }
+            });
             return data;
         } catch (error) {
-            console.error("Error fetching appointments: ",error);
+            console.error('Error fetching doctor appointments:', error);
             throw error;
         }
-
     },
 
-
-
-    cancelAppointment: async (id: string) => {
-        const { data } = await api.post(`/appointments/${id}/cancel`);
-        return data;
+    // Kreiranje termina (za doktora)
+    doctorCreateAppointment: async (datetime: string, doctorId: string): Promise<Appointment> => {
+        try {
+            const { data } = await api.post('/appointments', {
+                datetime,
+                doctor: doctorId
+            });
+            return data;
+        } catch (error) {
+            console.error('Error creating appointment:', error);
+            throw error;
+        }
     },
 
-    // Za doktore
-    approveAppointment: async (id: string) => {
-        const { data } = await api.patch(`/appointments/${id}/status`, {
-            status: 'APPROVED'
-        });
-        return data;
+    // Dohvati dostupne termine
+    getAvailableAppointments: async (): Promise<Appointment[]> => {
+        try {
+            const { data } = await api.get('/appointments');
+            return data;
+        } catch (error) {
+            console.error('Error fetching available appointments:', error);
+            throw error;
+        }
     },
 
-    rejectAppointment: async (id: string) => {
-        const { data } = await api.patch(`/appointments/${id}/status`, {
-            status: 'REJECTED'
-        });
-        return data;
+    // Rezerviši termin (za pacijenta)
+    bookAppointment: async (appointmentId: string): Promise<Appointment> => {
+        try {
+            const { data } = await api.post(`/appointments/${appointmentId}/book`);
+            return data;
+        } catch (error) {
+            console.error('Error booking appointment:', error);
+            throw error;
+        }
+    },
+
+    // Dohvati termine za određeni datum
+    getAppointmentsByDate: async (date: Date): Promise<Appointment[]> => {
+        try {
+            const formattedDate = date.toISOString().split('T')[0];
+            const { data } = await api.get('/appointments', {
+                params: {
+                    date: formattedDate,
+                    status: 'FREE'
+                }
+            });
+            return data;
+        } catch (error) {
+            console.error('Error fetching appointments by date:', error);
+            throw error;
+        }
+    },
+
+    // Otkaži termin
+    cancelAppointment: async (id: string): Promise<Appointment> => {
+        try {
+            const { data } = await api.post(`/appointments/${id}/cancel`);
+            return data;
+        } catch (error) {
+            console.error('Error canceling appointment:', error);
+            throw error;
+        }
+    },
+
+    // Odobri termin (za doktora)
+    approveAppointment: async (id: string): Promise<Appointment> => {
+        try {
+            const { data } = await api.patch(`/appointments/${id}/status`, {
+                status: 'APPROVED'
+            });
+            return data;
+        } catch (error) {
+            console.error('Error approving appointment:', error);
+            throw error;
+        }
+    },
+
+    // Odbij termin (za doktora)
+    rejectAppointment: async (id: string): Promise<Appointment> => {
+        try {
+            const { data } = await api.patch(`/appointments/${id}/status`, {
+                status: 'REJECTED'
+            });
+            return data;
+        } catch (error) {
+            console.error('Error rejecting appointment:', error);
+            throw error;
+        }
     }
 };
