@@ -12,88 +12,74 @@ import {
 	Chip,
 } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import Grid from "@mui/material/Grid2";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "react-calendar/dist/Calendar.css";
 import { Edit, Add } from "@mui/icons-material";
 import Logout from "../components/Logout";
 import Avatar from "@mui/material/Avatar";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import { useAuth } from "../context/AuthContext.tsx";
+import {appointmentService} from "../services/appointmentService.ts";
+import {formatAppointmentToEvent} from "../utiils/appointmentUtils.ts";
+import {AppointmentCalendar} from "../components/doctor/AppointmentCalendar.tsx";
 
 const DoctorDashboard = () => {
 	const { user } = useAuth();
-	const [selectedSlot, setSelectedSlot] = useState(null); // Single slot
-	const [events, setEvents] = useState([]);
+	const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+	const [events, setEvents] = useState<Event[]>([]);
+	const [loading, setLoading] = useState(false);
 
-	const notify = (message) => toast(message);
+	useEffect(() => {
+		if (user?.id){
+			fetchAppointments();
+		}
 
-	// Handle selecting a slot on the calendar
-	const handleDateSelect = (info) => {
-		const newSlot = {
-			start: info.start.toISOString(),
-			end: info.end.toISOString(),
-		};
+	}, [user?.id]);
 
-		setSelectedSlot(newSlot); // Store the single slot
-		notify("Slot selected! Click Save to confirm.");
+	const fetchAppointments = async () => {
+		try {
+			setLoading(true);
+			const appointments = await appointmentService.fetchAppointments();
+			const formattedEvents = appointments.map(apt =>
+				formatAppointmentToEvent(apt, user?.name || '')
+			);
+			setEvents(formattedEvents);
+		} catch (error) {
+			toast.error('Failed to load appointments');
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const handleSaveSlot = async () => {
-		if (!selectedSlot) {
-			notify("No slot selected!");
+		if (!selectedSlot || !user?.id) {
+			toast.warn('No slot selected!');
 			return;
 		}
 
 		try {
-			const token = localStorage.getItem("token");
-			const response = await fetch("http://localhost:5000/api/appointments", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify({
-					datetime: selectedSlot.start,
-					doctor: user._id,
-				}),
-			});
-
-			if (response.ok) {
-				const result = await response.json();
-				setEvents((prevEvents) => [
-					...prevEvents,
-					{
-						title: `Dr.${user?.name}`,
-						start: selectedSlot.start,
-						end: selectedSlot.end,
-					},
-				]);
-				setSelectedSlot(null); // Clear the selection after saving
-				notify("Slot saved successfully!");
-			} else {
-				notify("Failed to save the slot. Please try again.");
-				console.error("Save slot failed:", await response.json());
-			}
+			setLoading(true);
+			await appointmentService.doctorCreateAppointment(selectedSlot.start, user.id);
+			toast.success('Slot saved successfully!');
+			setSelectedSlot(null);
+			await fetchAppointments();
 		} catch (error) {
-			notify("An error occurred while saving the slot.");
-			console.error("Error saving slot:", error);
+			toast.error('Failed to save slot');
+			console.error(error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	return (
-		<div className="flex flex-col w-full gap-4">
-			<Logout />
+		<div className="flex flex-col w-full">
 			<ToastContainer
 				position="top-right"
 				autoClose={5000}
 				hideProgressBar={false}
 				newestOnTop={false}
-				closeOnClick={false}
+				closeOnClick={true}
 				rtl={false}
 				pauseOnFocusLoss
 				draggable
@@ -101,7 +87,7 @@ const DoctorDashboard = () => {
 				theme="light"
 			/>
 			<div className="flex flex-row w-full">
-				<div className="flex flex-col  rounded-md w-1/4 gap-4 px-12 py-10 justify-between">
+				<div className="flex flex-col bg-slate-100 rounded-md w-1/5 gap-4 px-12 py-10 justify-between">
 					<div className="flex flex-col gap-4">
 						<div className="flex flex-col gap-2 items-center justify-center">
 							<Avatar sx={{ width: 54, height: 54 }}></Avatar>
@@ -109,28 +95,26 @@ const DoctorDashboard = () => {
 							<p className="font-medium text-xl">{user?.role}</p>
 						</div>
 					</div>
+					<Logout />
 				</div>
-				<div className="flex flex-col w-3/4 rounded-md py-10 px-8 h-screen gap-6">
-					<div className="flex flex-col w-full bg-cyan-100 p-4 rounded-md h-1/2">
-						<FullCalendar
-							plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-							initialView="timeGridWeek"
-							selectable={true}
-							select={handleDateSelect}
-							events={events}
-							height="100%"
-						/>
-					</div>
-					<div className="flex flex-row w-full bg-cyan-100 p-6 rounded-md gap-6 h-1/2">
-						<Button
-							variant="contained"
-							color="primary"
-							startIcon={<Add />}
-							onClick={handleSaveSlot}
-						>
-							Save Slot
-						</Button>
-					</div>
+				<div className="flex flex-col w-full rounded-md py-4 px-8 h-screen gap-6 bg-white">
+							<AppointmentCalendar events={events} onSlotSelect={setSelectedSlot}/>
+						<div className="flex flex-row justify-between items-start gap-6">
+							<Button
+								variant="contained"
+								color="primary"
+								startIcon={<Add/>}
+								onClick={handleSaveSlot}
+								disabled={loading || !selectedSlot}
+							>
+								{loading ? 'Saving...' : 'Save Slot'}
+							</Button>
+							{selectedSlot && (
+								<div className="text-xl text-gray-600 font-bold">
+									Selected: {new Date(selectedSlot.start).toLocaleString()}
+								</div>
+							)}
+						</div>
 				</div>
 			</div>
 		</div>

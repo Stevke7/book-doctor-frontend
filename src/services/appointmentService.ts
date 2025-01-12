@@ -1,8 +1,51 @@
 // services/appointmentService.ts
 import api from './api';
-import {Appointment} from "../types/appointment.types.ts";
+import {Appointment, Event} from "../types/appointment.types.ts";
 
 export const appointmentService = {
+    fetchAppointments: async (): Promise<Appointment[]> => {
+        const response = await fetch('http://localhost:5000/api/appointments', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch Appointments");
+        }
+        return response.json();
+    },
+
+    fetchDoctorAppointments: async (doctorId: string): Promise<Appointment[]> => {
+        const response = await fetch(`http://localhost:5000/api/appointments?doctor=${doctorId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch doctor appointments');
+        }
+
+        return response.json();
+    },
+
+    doctorCreateAppointment: async (datetime: string, doctorId: string) : Promise<Appointment> => {
+        const response = await fetch('http://localhost:5000/api/appointments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({datetime, doctor: doctorId})
+        });
+        if(!response.ok) {
+            throw new Error('Failed to create an Appointment');
+        }
+
+        return response.json
+    },
+
     getAvailableAppointments: async () => {
         try {
             const {data} = await api.get<Appointment[]>('/appointments');
@@ -14,16 +57,18 @@ export const appointmentService = {
         }
     },
 
-    bookAppointment: async (appointmentId: string) => {
-        try{
-            //console.log('Book Appointment for: ', datetime);
-            const { data } = await api.post<Appointment>(`/appointments/${appointmentId}/book`);
-            return data;
-        } catch (error) {
-            console.error('Error booking appointment:', error);
-            throw error;
+    bookAppointment: async (appointmentId: string): Promise<Appointment> => {
+        const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}/book`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            }
+        })
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to fetch book appointments');
         }
-
+        return response.json();
     },
 
     getAppointmentsByDate: async (date: Date) => {

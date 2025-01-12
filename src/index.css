@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+.status-free {
+    background-color: #4CAF50 !important;
+    border: none;
+}
+
+.status-pending {
+    background-color: #FFC107 !important;
+    border: none;
+}
+
+.status-approved {
+    background-color: #2196F3 !important;
+    border: none;
+}
+
+.status-rejected {
+    background-color: #F44336 !important;
+    border: none;
+}
 
 @layer {
     .bg-hero{

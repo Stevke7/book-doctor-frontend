@@ -1,4 +1,3 @@
-// components/appointments/AppointmentList.tsx
 import { useState, useEffect } from 'react';
 import { appointmentService } from '../services/appointmentService';
 import { useAuth } from '../context/AuthContext';
