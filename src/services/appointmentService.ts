@@ -16,7 +16,7 @@ export const appointmentService = {
 
     bookAppointment: async (appointmentId: string) => {
         try{
-            console.log('Book Appointment for: ', datetime);
+            //console.log('Book Appointment for: ', datetime);
             const { data } = await api.post<Appointment>(`/appointments/${appointmentId}/book`);
             return data;
         } catch (error) {
