@@ -38,15 +38,15 @@ const PatientDashboard = () => {
 		try {
 			setLoading(true);
 			const data = await appointmentService.fetchAppointments();
-			console.log("APPOINT", data);
-			const myEvent = data.filter((appontment) => {
+			const myEvent = data.filter((appointment) => {
 				return (
-					appontment?.patient?._id === user?._id && appontment.status !== "FREE"
+					appointment?.patient?.some((p) => p._id === user?._id) &&
+					appointment.status !== "FREE"
 				);
 			});
+			console.log("appointment data in fetch patient dash", data);
+			console.log("MY DATA APPOINTMENT", myEvent);
 			setAllMyAppointments(myEvent);
-			console.log("USER", data);
-			console.log("DARTAA", myEvent);
 			setAppointments(data);
 		} catch (error) {
 			toast.error("Failed to load appointments");
