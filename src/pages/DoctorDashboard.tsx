@@ -40,6 +40,7 @@ const DoctorDashboard = () => {
 		try {
 			setLoading(true);
 			const appointments = await appointmentService.fetchAppointments();
+			console.log("DOCTOR APPOINTMENTS", appointments);
 			setAppointments(appointments);
 			const formattedEvents = appointments.map((apt) =>
 				formatAppointmentToEvent(apt)
@@ -47,8 +48,10 @@ const DoctorDashboard = () => {
 			setEvents(formattedEvents);
 
 			setPendingAppointments(
-				appointments.filter((apt) => apt.status === "PENDING")
+				appointments.filter((apt) => apt?.status === "PENDING")
 			);
+
+			console.log("APPOINT", appointments);
 		} catch (error) {
 			toast.error("Failed to load appointments");
 			console.error(error);
@@ -187,7 +190,7 @@ const DoctorDashboard = () => {
 					<div className="grid gap-4">
 						{appointments.map((appointment) => (
 							<div
-								key={appointment._id}
+								key={`${appointment._id}-${appointment.patient?._id}`}
 								className="p-4 flex flex-col gap-2 bg-white rounded-lg shadow-md"
 							>
 								<div className="mb-2 flex flex-row gap-2 justify-between">
@@ -210,10 +213,11 @@ const DoctorDashboard = () => {
 									<p className="font-medium text-sm text-gray-700">
 										{new Date(appointment.datetime).toLocaleString()}
 									</p>
-									{appointment.patient && (
-										<p className="text-md font-semibold text-gray-600">
-											Patient: {appointment.patient.name}
-										</p>
+									{appointment.patient && appointment.patient.length > 0 && (
+										<div className="text-md font-semibold text-gray-600">
+											Patient:{" "}
+											{appointment.patient.map((p) => p.name).join(", ")}
+										</div>
 									)}
 								</div>
 

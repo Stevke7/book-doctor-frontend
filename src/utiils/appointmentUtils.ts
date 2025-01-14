@@ -10,13 +10,13 @@ export const getEventColor = (status: string): string => {
 };
 
 export const formatAppointmentToEvent = (appointment: Appointment): Event => ({
-	title: `Dr. ${appointment.doctor.name}`,
-	start: appointment.datetime,
+	title: `Dr. ${appointment?.doctor?.name}`,
+	start: appointment?.datetime,
 	end: new Date(
-		new Date(appointment.datetime).getTime() + 30 * 60000
+		new Date(appointment?.datetime).getTime() + 30 * 60000
 	).toISOString(),
-	status: appointment.status,
+	status: appointment?.status,
 	backgroundColor: "#F6F6F6",
-	fontColor: getEventColor(appointment.status),
-	doctorId: appointment.doctor._id,
+	fontColor: getEventColor(appointment?.status),
+	doctorId: appointment?.doctor._id,
 });

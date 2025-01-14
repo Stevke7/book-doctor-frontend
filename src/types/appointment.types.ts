@@ -4,7 +4,7 @@ export interface Appointment {
 	_id: string;
 	datetime: string;
 	status: "FREE" | "PENDING" | "APPROVED" | "REJECTED";
-	patient?: AuthUser;
+	patient?: Array<{ _id: string; name: string }>;
 	doctor: AuthUser;
 	createdAt: string;
 	updatedAt: string;

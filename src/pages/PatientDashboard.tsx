@@ -38,7 +38,7 @@ const PatientDashboard = () => {
 		try {
 			setLoading(true);
 			const data = await appointmentService.fetchAppointments();
-			console.log("APPOINT", data);
+			console.log("FETCH DATA PATIENT", data);
 			const myEvent = data.filter((appontment) => {
 				return (
 					appontment?.patient?._id === user?._id && appontment.status !== "FREE"
