@@ -19,6 +19,7 @@ import { formatAppointmentToEvent } from "../utiils/appointmentUtils.ts";
 import { AppointmentCalendar } from "../components/doctor/AppointmentCalendar.tsx";
 import AvatarImg from "../assets/avatar.png";
 import { Appointment, Event, TimeSlot } from "../types/appointment.types.ts";
+import { AuthUser } from "../types/auth.types.ts";
 
 const DoctorDashboard = () => {
 	const { user } = useAuth();
@@ -26,9 +27,7 @@ const DoctorDashboard = () => {
 	const [events, setEvents] = useState<Event[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [appointments, setAppointments] = useState<Appointment[]>([]);
-	const [pendingAppointments, setPendingAppointments] = useState<Appointment[]>(
-		[]
-	);
+	const [allEvents, setAllEvents] = useState<Appointment[]>([]);
 
 	useEffect(() => {
 		if (user?._id) {
@@ -41,14 +40,39 @@ const DoctorDashboard = () => {
 			setLoading(true);
 			const appointments = await appointmentService.fetchAppointments();
 			setAppointments(appointments);
+			console.log("APPOINTMENTS IN DOC DASH", appointments);
+			if (user?.role === "doctor") {
+				let tempEvents: Appointment[] = [];
+
+				appointments.forEach((app) => {
+					if (
+						app.status === "FREE" &&
+						app.events.length &&
+						app.events.some((event: Event) => event.status === "PENDING")
+					) {
+						app.status = "PENDING";
+					}
+
+					if (app.events.length) {
+						app.events.forEach((event: any) => {
+							let tempApp: Appointment = {
+								_id: app._id,
+								eventId: event._id,
+								status: event.status,
+								doctor: app.doctor,
+								patient: event.patient,
+								datetime: app.datetime,
+							} as Appointment;
+							tempEvents.push(tempApp);
+						});
+					}
+				});
+				setAllEvents(tempEvents);
+			}
 			const formattedEvents = appointments.map((apt) =>
 				formatAppointmentToEvent(apt)
 			);
 			setEvents(formattedEvents);
-
-			setPendingAppointments(
-				appointments.filter((apt) => apt.status === "PENDING")
-			);
 		} catch (error) {
 			toast.error("Failed to load appointments");
 			console.error(error);
@@ -80,10 +104,10 @@ const DoctorDashboard = () => {
 		}
 	};
 
-	const handleApprove = async (appointmentId: string) => {
+	const handleApprove = async (appointmentId: string, eventId: string) => {
 		try {
 			setLoading(true);
-			await appointmentService.approveAppointment(appointmentId);
+			await appointmentService.approveAppointment(appointmentId, eventId);
 			toast.success("Appointment approved");
 			await fetchAppointments();
 		} catch (error) {
@@ -94,10 +118,10 @@ const DoctorDashboard = () => {
 		}
 	};
 
-	const handleReject = async (appointmentId: string) => {
+	const handleReject = async (appointmentId: string, eventId: string) => {
 		try {
 			setLoading(true);
-			await appointmentService.rejectAppointment(appointmentId);
+			await appointmentService.rejectAppointment(appointmentId, eventId);
 			toast.success("Appointment rejected");
 			await fetchAppointments();
 		} catch (error) {
@@ -185,7 +209,7 @@ const DoctorDashboard = () => {
 				<div className="mt-6 overflow-y-auto w-[35%] h-[95vh] border-l border-l-gray-300 pl-4">
 					<h2 className="text-xl font-bold mb-4">All Events</h2>
 					<div className="grid gap-4">
-						{appointments.map((appointment) => (
+						{allEvents.map((appointment) => (
 							<div
 								key={appointment._id}
 								className="p-4 flex flex-col gap-2 bg-white rounded-lg shadow-md"
@@ -224,7 +248,9 @@ const DoctorDashboard = () => {
 												size="small"
 												variant="contained"
 												color="success"
-												onClick={() => handleApprove(appointment._id)}
+												onClick={() =>
+													handleApprove(appointment._id, appointment.eventId)
+												}
 												disabled={loading}
 											>
 												Approve
@@ -233,7 +259,9 @@ const DoctorDashboard = () => {
 												size="small"
 												variant="contained"
 												color="error"
-												onClick={() => handleReject(appointment._id)}
+												onClick={() =>
+													handleReject(appointment._id, appointment.eventId)
+												}
 												disabled={loading}
 											>
 												Reject

@@ -26,6 +26,8 @@ const PatientDashboard = () => {
 	const { user, loading: authLoading } = useAuth();
 	const [appointments, setAppointments] = useState<Appointment[]>([]);
 	const [allMyAppointments, setAllMyAppointments] = useState<Appointment[]>([]);
+	const [allEvents, setAllEvents] = useState<Appointment[]>([]);
+
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -38,15 +40,38 @@ const PatientDashboard = () => {
 		try {
 			setLoading(true);
 			const data = await appointmentService.fetchAppointments();
-			console.log("APPOINT", data);
-			const myEvent = data.filter((appontment) => {
+
+			let tempEvents: Appointment[] = [];
+
+			data.forEach((app) => {
+				if (app.events.length) {
+					app.events.forEach((event: any) => {
+						if (event.patient.toString() === user?._id.toString()) {
+							let tempApp: Appointment = {
+								_id: app._id,
+								eventId: event._id,
+								status: event.status,
+								doctor: app.doctor,
+								patient: event.patient,
+								datetime: app.datetime,
+							} as Appointment;
+							tempEvents.push(tempApp);
+						}
+					});
+				}
+			});
+
+			setAllEvents(tempEvents);
+
+			const myEvent = data.filter((appointment) => {
 				return (
-					appontment?.patient?._id === user?._id && appontment.status !== "FREE"
+					appointment.status !== "FREE" &&
+					appointment.events.some(
+						(event: any) => event.patient.toString() === user?._id.toString()
+					)
 				);
 			});
 			setAllMyAppointments(myEvent);
-			console.log("USER", data);
-			console.log("DARTAA", myEvent);
 			setAppointments(data);
 		} catch (error) {
 			toast.error("Failed to load appointments");
@@ -63,7 +88,7 @@ const PatientDashboard = () => {
 			toast.success(
 				"Appointment request submitted! Waiting for doctor's approval."
 			);
-			await fetchAppointments(); // Refresh list after booking
+			await fetchAppointments();
 		} catch (error: any) {
 			if (error.response?.status === 400) {
 				toast.error("This appointment is no longer available");
@@ -135,7 +160,7 @@ const PatientDashboard = () => {
 					<div className="flex flex-col w-ful">
 						<h2 className="text-xl font-bold mb-4">My Appointments</h2>
 						<div className="flex flex-row gap-4 p-4 overflow-x-auto">
-							{allMyAppointments.map((appointment) => (
+							{allEvents.map((appointment) => (
 								<div
 									key={appointment._id}
 									className="p-4 flex flex-col gap-3 py-4 px-6 bg-white rounded-lg border border-gray-200 min-w-[300px]"
@@ -148,11 +173,10 @@ const PatientDashboard = () => {
 									</div>
 									<div className="flex flex-row gap-2 justify-start items-center">
 										<PermIdentityOutlined />
-										{appointment.patient && (
-											<p className="text-sm font-medium text-gray-600">
-												Doctor: {appointment.doctor.name}
-											</p>
-										)}
+
+										<p className="text-sm font-medium text-gray-600">
+											Doctor: {appointment.doctor.name}
+										</p>
 									</div>
 
 									<div className="mb-2 flex flex-row gap-2 justify-start items-center">

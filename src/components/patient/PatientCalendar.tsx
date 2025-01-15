@@ -10,8 +10,8 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
-import { useState } from "react";
-import { Appointment } from "../../types/appointment.types";
+import { useEffect, useState } from "react";
+import { Appointment, Event } from "../../types/appointment.types";
 import { useAuth } from "../../context/AuthContext";
 import { formatAppointmentToEvent } from "../../utiils/appointmentUtils.ts";
 import { Circle } from "@mui/icons-material";
@@ -31,32 +31,62 @@ export const PatientCalendar = ({
 	const [selectedAppointment, setSelectedAppointment] =
 		useState<Appointment | null>(null);
 	const [dialogOpen, setDialogOpen] = useState(false);
+	const [events, setEvents] = useState<Appointment[]>([]);
 
-	const getEventTitle = (appointment: Appointment): string => {
-		if (appointment.patient?._id === user?._id) {
-			switch (appointment.status) {
+	useEffect(() => {
+		let tempEvents: Appointment[] = appointments.map(
+			(apt) =>
+				({
+					...formatAppointmentToEvent(apt),
+					title: getEventTitle(apt, userId!),
+					status: getStatus(apt),
+					extendedProps: {
+						isMyAppointment: !!apt.events.find(
+							(event: Event) => event.patient === userId
+						),
+						doctor: apt.doctor.name,
+					},
+				} as unknown as Appointment)
+		);
+		setEvents(tempEvents);
+	}, [appointments]);
+
+	const getEventTitle = (appointment: Appointment, userId: string): string => {
+		const userEvent = appointment.events.find(
+			(event: Event) => event.patient === userId
+		) as unknown as Event;
+
+		if (userEvent) {
+			switch (userEvent.status) {
 				case "PENDING":
-					return "Pending";
+					return "Pending Approval";
 				case "APPROVED":
 					return "Approved";
 				case "REJECTED":
 					return "Rejected";
 				default:
-					return "Available";
+					return "Unknown Status";
 			}
 		}
-		return appointment.status;
+
+		return appointment.status === "FREE" ? "Available" : "Booked";
 	};
 
-	const events = appointments.map((apt) => ({
-		...formatAppointmentToEvent(apt),
-		title: getEventTitle(apt),
-		extendedProps: {
-			isMyAppointment: apt.patient?._id === user?._id,
-			doctor: apt.doctor.name,
-			status: apt.status,
-		},
-	}));
+	const userId = user?._id;
+
+	const getStatus = (appointment: Appointment) => {
+		for (const event of appointment.events) {
+			console.log("I JEDNTO I DRUGO", event, user?._id);
+			if (event.patient?.toString() === user?._id.toString()) {
+				console.log("STATUS", event.status);
+				return event.status; // This will correctly exit the function once a match is found
+			}
+		}
+		return "FREE"; // Default if no matching event is found
+	};
+	console.log("get status");
+
+	console.log("events", events);
 
 	const handleEventClick = (info: any) => {
 		const appointment = appointments.find(

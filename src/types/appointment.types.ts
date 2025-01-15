@@ -2,12 +2,15 @@ import { AuthUser } from "./auth.types.ts";
 
 export interface Appointment {
 	_id: string;
+	eventId: string;
 	datetime: string;
 	status: "FREE" | "PENDING" | "APPROVED" | "REJECTED";
 	patient?: AuthUser;
 	doctor: AuthUser;
 	createdAt: string;
 	updatedAt: string;
+	events: [];
+	title?: string;
 }
 
 export interface TimeSlot {
@@ -23,4 +26,5 @@ export interface Event {
 	backgroundColor: string;
 	doctorId: string;
 	fontColor: string;
+	patient?: string;
 }
