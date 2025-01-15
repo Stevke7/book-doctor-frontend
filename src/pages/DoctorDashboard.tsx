@@ -205,28 +205,30 @@ const DoctorDashboard = () => {
 						)}
 					</div>
 				</div>
-				<div className="mt-6 overflow-y-auto w-[35%] h-[95vh] border-l border-l-gray-300 pl-4">
+				<div className="mt-6 overflow-y-auto w-[35%] h-[95vh] border-l border-l-gray-300 px-4">
 					<h2 className="text-xl font-bold mb-4">All Events</h2>
 					<div className="grid gap-4">
 						{allEvents.map((appointment) => (
 							<div
 								key={`${appointment._id}-${appointment.eventId}`}
-								className="p-4 flex flex-col gap-2 bg-white rounded-lg shadow-md"
+								className="p-4 flex flex-col gap-2 bg-white rounded-lg border border-gray-200"
 							>
 								<div className="mb-2 flex flex-row gap-2 justify-between">
 									<Chip
 										label={appointment.status}
-										color={
-											appointment.status === "PENDING"
-												? "warning"
-												: appointment.status === "APPROVED"
-												? "success"
-												: appointment.status === "REJECTED"
-												? "error"
-												: "default"
-										}
+										variant="outlined"
+										sx={{
+											color:
+												appointment.status === "PENDING"
+													? "orange"
+													: appointment.status === "APPROVED"
+													? "green"
+													: appointment.status === "REJECTED"
+													? "red"
+													: "default",
+										}}
 										size="small"
-										className="text-sm"
+										className="text-sm font-semibold"
 									/>
 								</div>
 								<div className="flex flex-col justify-between gap-2 mb-4">
@@ -246,7 +248,11 @@ const DoctorDashboard = () => {
 											<Button
 												size="small"
 												variant="contained"
-												color="success"
+												sx={{
+													backgroundColor: "#dcfce7",
+													color: "#14532d",
+													fontWeight: "bold",
+												}}
 												onClick={() =>
 													handleApprove(appointment._id, appointment.eventId)
 												}
@@ -254,10 +260,15 @@ const DoctorDashboard = () => {
 											>
 												Approve
 											</Button>
+
 											<Button
 												size="small"
 												variant="contained"
-												color="error"
+												sx={{
+													backgroundColor: "#fee2e2",
+													color: "#991b1b",
+													fontWeight: "bold",
+												}}
 												onClick={() =>
 													handleReject(appointment._id, appointment.eventId)
 												}
