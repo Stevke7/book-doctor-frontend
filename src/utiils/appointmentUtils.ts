@@ -10,6 +10,7 @@ export const getEventColor = (status: string): string => {
 };
 
 export const formatAppointmentToEvent = (appointment: Appointment): Event => ({
+	_id: appointment._id,
 	title: `Dr. ${appointment.doctor.name}`,
 	start: appointment.datetime,
 	end: new Date(

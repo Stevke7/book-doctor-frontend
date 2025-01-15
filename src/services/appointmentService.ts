@@ -1,9 +1,8 @@
-// services/appointmentService.ts
 import api from "./api";
 import { Appointment } from "../types/appointment.types";
 
 export const appointmentService = {
-	// Dohvati sve termine
+	// FETCH ALL APPOINTMENTS
 	fetchAppointments: async (): Promise<Appointment[]> => {
 		try {
 			const { data } = await api.get("/appointments");
@@ -14,20 +13,7 @@ export const appointmentService = {
 		}
 	},
 
-	// Dohvati termine za određenog doktora
-	fetchDoctorAppointments: async (doctorId: string): Promise<Appointment[]> => {
-		try {
-			const { data } = await api.get(`/appointments`, {
-				params: { doctor: doctorId },
-			});
-			return data;
-		} catch (error) {
-			console.error("Error fetching doctor appointments:", error);
-			throw error;
-		}
-	},
-
-	// Kreiranje termina (za doktora)
+	// CREATE AN APPOINTMENT FOR DOCTORS
 	doctorCreateAppointment: async (
 		datetime: string,
 		doctorId: string
@@ -44,18 +30,7 @@ export const appointmentService = {
 		}
 	},
 
-	// Dohvati dostupne termine
-	getAvailableAppointments: async (): Promise<Appointment[]> => {
-		try {
-			const { data } = await api.get("/appointments");
-			return data;
-		} catch (error) {
-			console.error("Error fetching available appointments:", error);
-			throw error;
-		}
-	},
-
-	// Rezerviši termin (za pacijenta)
+	//BOOK AN FREE EVENT (FOR PATIENTS)
 	bookAppointment: async (appointmentId: string): Promise<Appointment> => {
 		try {
 			const { data } = await api.post(`/appointments/${appointmentId}/book`);
@@ -66,35 +41,7 @@ export const appointmentService = {
 		}
 	},
 
-	// Dohvati termine za određeni datum
-	getAppointmentsByDate: async (date: Date): Promise<Appointment[]> => {
-		try {
-			const formattedDate = date.toISOString().split("T")[0];
-			const { data } = await api.get("/appointments", {
-				params: {
-					date: formattedDate,
-					status: "FREE",
-				},
-			});
-			return data;
-		} catch (error) {
-			console.error("Error fetching appointments by date:", error);
-			throw error;
-		}
-	},
-
-	// Otkaži termin
-	cancelAppointment: async (id: string): Promise<Appointment> => {
-		try {
-			const { data } = await api.post(`/appointments/${id}/cancel`);
-			return data;
-		} catch (error) {
-			console.error("Error canceling appointment:", error);
-			throw error;
-		}
-	},
-
-	// Odobri termin (za doktora)
+	//DOCTOR APPROVE APPOINTMENT
 	approveAppointment: async (
 		id: string,
 		eventId: string
@@ -111,7 +58,7 @@ export const appointmentService = {
 		}
 	},
 
-	// Odbij termin (za doktora)
+	// DOCTOR REJECT APPOINTMENT
 	rejectAppointment: async (
 		id: string,
 		eventId: string

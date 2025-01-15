@@ -69,12 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		if (token) {
 			try {
 				const decoded = jwtDecode<DecodedToken>(token);
-
-				// const currentTime = Date.now() / 1000;
-				// if (decoded.exp && decoded.exp < currentTime) {
-				//     logout();
-				//     return;
-				// }
 				setUser({
 					_id: decoded.userId,
 					email: decoded.email,

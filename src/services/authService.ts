@@ -14,7 +14,7 @@ const isTokenExpired = (token: string): boolean => {
 		return decodedToken.exp < currentTime;
 	} catch (error) {
 		console.error("Failed to decode token:", error);
-		return true; // Treat invalid tokens as expired
+		return true;
 	}
 };
 

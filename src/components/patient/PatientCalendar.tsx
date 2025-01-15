@@ -1,4 +1,3 @@
-// components/patient/PatientCalendar.tsx
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -11,16 +10,17 @@ import {
 	DialogTitle,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Appointment, Event } from "../../types/appointment.types";
+import {
+	Appointment,
+	Event,
+	PatientCalendarProps,
+} from "../../types/appointment.types";
 import { useAuth } from "../../context/AuthContext";
-import { formatAppointmentToEvent } from "../../utiils/appointmentUtils.ts";
+import {
+	formatAppointmentToEvent,
+	getEventColor,
+} from "../../utiils/appointmentUtils.ts";
 import { Circle } from "@mui/icons-material";
-
-interface PatientCalendarProps {
-	appointments: Appointment[];
-	onBookAppointment: (appointmentId: string) => Promise<void>;
-	loading: boolean;
-}
 
 export const PatientCalendar = ({
 	appointments,
@@ -40,11 +40,14 @@ export const PatientCalendar = ({
 					...formatAppointmentToEvent(apt),
 					title: getEventTitle(apt, userId!),
 					status: getStatus(apt),
+					backgroundColor: "#F6F6F6",
+					fontColor: getEventColor(getStatus(apt)),
 					extendedProps: {
 						isMyAppointment: !!apt.events.find(
 							(event: Event) => event.patient === userId
 						),
 						doctor: apt.doctor.name,
+						fontColor: getEventColor(getStatus(apt)),
 					},
 				} as unknown as Appointment)
 		);
@@ -76,13 +79,11 @@ export const PatientCalendar = ({
 
 	const getStatus = (appointment: Appointment) => {
 		for (const event of appointment.events) {
-			console.log("I JEDNTO I DRUGO", event, user?._id);
 			if (event.patient?.toString() === user?._id.toString()) {
-				console.log("STATUS", event.status);
-				return event.status; // This will correctly exit the function once a match is found
+				return event.status;
 			}
 		}
-		return "FREE"; // Default if no matching event is found
+		return "FREE";
 	};
 	console.log("get status");
 

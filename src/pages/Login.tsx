@@ -35,8 +35,8 @@ const Login = () => {
 		try {
 			const response = await authService.login(formData);
 
-			console.log("Login response:", response); // Log the entire response
-			console.log("Token from response:", response.token); // Log just the token
+			console.log("Login response:", response);
+			console.log("Token from response:", response.token);
 
 			if (!response.user || !response.token || !response.user.role) {
 				throw new Error("Invalid response from server");

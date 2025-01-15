@@ -19,7 +19,6 @@ import { formatAppointmentToEvent } from "../utiils/appointmentUtils.ts";
 import { AppointmentCalendar } from "../components/doctor/AppointmentCalendar.tsx";
 import AvatarImg from "../assets/avatar.png";
 import { Appointment, Event, TimeSlot } from "../types/appointment.types.ts";
-import { AuthUser } from "../types/auth.types.ts";
 
 const DoctorDashboard = () => {
 	const { user } = useAuth();
@@ -54,7 +53,7 @@ const DoctorDashboard = () => {
 					}
 
 					if (app.events.length) {
-						app.events.forEach((event: any) => {
+						app.events.forEach((event: Event) => {
 							let tempApp: Appointment = {
 								_id: app._id,
 								eventId: event._id,
@@ -211,7 +210,7 @@ const DoctorDashboard = () => {
 					<div className="grid gap-4">
 						{allEvents.map((appointment) => (
 							<div
-								key={appointment._id}
+								key={`${appointment._id}-${appointment.eventId}`}
 								className="p-4 flex flex-col gap-2 bg-white rounded-lg shadow-md"
 							>
 								<div className="mb-2 flex flex-row gap-2 justify-between">

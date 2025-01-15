@@ -27,4 +27,16 @@ export interface Event {
 	doctorId: string;
 	fontColor: string;
 	patient?: string;
+	_id: string;
+}
+
+export interface PatientCalendarProps {
+	appointments: Appointment[];
+	onBookAppointment: (appointmentId: string) => Promise<void>;
+	loading: boolean;
+}
+
+export interface AppointmentCalendarProps {
+	events: Event[];
+	onSlotSelect: (slot: TimeSlot) => void;
 }
