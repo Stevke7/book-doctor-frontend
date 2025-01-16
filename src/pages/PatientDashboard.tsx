@@ -24,7 +24,6 @@ import { Navigate } from "react-router-dom";
 const PatientDashboard = () => {
 	const { user, loading: authLoading } = useAuth();
 	const [appointments, setAppointments] = useState<Appointment[]>([]);
-	const [allMyAppointments, setAllMyAppointments] = useState<Appointment[]>([]);
 	const [allEvents, setAllEvents] = useState<Appointment[]>([]);
 
 	const [loading, setLoading] = useState(false);
@@ -62,15 +61,6 @@ const PatientDashboard = () => {
 
 			setAllEvents(tempEvents);
 
-			const myEvent = data.filter((appointment) => {
-				return (
-					appointment.status !== "FREE" &&
-					appointment.events.some(
-						(event: any) => event.patient.toString() === user?._id.toString()
-					)
-				);
-			});
-			setAllMyAppointments(myEvent);
 			setAppointments(data);
 		} catch (error) {
 			toast.error("Failed to load appointments");
