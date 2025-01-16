@@ -9,7 +9,7 @@ export interface Appointment {
 	doctor: AuthUser;
 	createdAt: string;
 	updatedAt: string;
-	events: [];
+	events: Event[];
 	title?: string;
 }
 

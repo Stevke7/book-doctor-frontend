@@ -33,13 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			throw new Error("No token provided");
 		}
 
-		console.log("Raw token received:", token);
-
 		try {
 			const decoded = jwtDecode<DecodedToken>(token);
-			console.log("Decoded token:", decoded);
 			if (!decoded.userId || !decoded.email || !decoded.role) {
-				console.log("TOKEN", decoded);
 				throw new Error("Invalid token structure");
 			}
 

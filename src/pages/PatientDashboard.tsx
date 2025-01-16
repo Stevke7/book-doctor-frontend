@@ -70,8 +70,6 @@ const PatientDashboard = () => {
 					)
 				);
 			});
-			console.log("AllEvents", allEvents);
-			console.log("DATA in PAT DASH", data);
 			setAllMyAppointments(myEvent);
 			setAppointments(data);
 		} catch (error) {
@@ -81,10 +79,6 @@ const PatientDashboard = () => {
 			setLoading(false);
 		}
 	};
-
-	useEffect(() => {
-		console.log("AllEvents after update", allEvents);
-	}, [allEvents]);
 
 	const handleBookAppointment = async (appointmentId: string) => {
 		try {

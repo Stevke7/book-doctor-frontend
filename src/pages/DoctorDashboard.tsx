@@ -39,7 +39,6 @@ const DoctorDashboard = () => {
 			setLoading(true);
 			const appointments = await appointmentService.fetchAppointments();
 			setAppointments(appointments);
-			console.log("APPOINTMENTS IN DOC DASH", appointments);
 			if (user?.role === "doctor") {
 				let tempEvents: Appointment[] = [];
 

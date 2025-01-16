@@ -77,17 +77,16 @@ export const PatientCalendar = ({
 
 	const userId = user?._id;
 
-	const getStatus = (appointment: Appointment) => {
+	const getStatus = (
+		appointment: Appointment
+	): "FREE" | "PENDING" | "APPROVED" | "REJECTED" => {
 		for (const event of appointment.events) {
 			if (event.patient?.toString() === user?._id.toString()) {
-				return event.status;
+				return event.status as "FREE" | "PENDING" | "APPROVED" | "REJECTED";
 			}
 		}
 		return "FREE";
 	};
-	console.log("get status");
-
-	console.log("events", events);
 
 	const handleEventClick = (info: any) => {
 		const appointment = appointments.find(

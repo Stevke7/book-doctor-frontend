@@ -16,8 +16,6 @@ export const AppointmentCalendar = ({
 		});
 	};
 
-	console.log("DOCTOR CALENDAR EVENTS", events);
-
 	return (
 		<FullCalendar
 			plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
