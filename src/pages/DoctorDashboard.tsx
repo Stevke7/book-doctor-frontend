@@ -25,7 +25,7 @@ const DoctorDashboard = () => {
 	const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [appointments, setAppointments] = useState<Appointment[]>([]);
+	let [appointments, setAppointments] = useState<Appointment[]>([]);
 	const [allEvents, setAllEvents] = useState<Appointment[]>([]);
 
 	useEffect(() => {
@@ -37,10 +37,11 @@ const DoctorDashboard = () => {
 	const fetchAppointments = async () => {
 		try {
 			setLoading(true);
-			const appointments = await appointmentService.fetchAppointments();
+			appointments = await appointmentService.fetchAppointments();
 			setAppointments(appointments);
 			if (user?.role === "doctor") {
 				const tempEvents: Appointment[] = [];
+				console.log("Fetched appointments:", appointments);
 
 				appointments.forEach((app) => {
 					if (
