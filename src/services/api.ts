@@ -2,7 +2,8 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const api: AxiosInstance = axios.create({
-	baseURL: "http://localhost:5000/api",
+	baseURL: import.meta.env.BASE_URL,
+	timeout: 10000, // 10 seconds timeout
 	headers: {
 		"Content-Type": "application/json",
 	},
