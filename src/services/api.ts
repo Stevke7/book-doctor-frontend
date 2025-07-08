@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const api: AxiosInstance = axios.create({
-	baseURL: import.meta.env.BASE_URL,
+	baseURL: import.meta.env.VITE_BASE_URL,
 	timeout: 10000, // 10 seconds timeout
 	headers: {
 		"Content-Type": "application/json",
@@ -28,6 +28,7 @@ api.interceptors.request.use(
 			} catch (error) {
 				localStorage.removeItem("token");
 				window.location.href = "/login";
+				console.error("Invalid token:", error);
 				throw new axios.Cancel("Invalid token. Please log in again.");
 			}
 		}

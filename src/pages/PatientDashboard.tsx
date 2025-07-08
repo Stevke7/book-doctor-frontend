@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Avatar } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
@@ -39,13 +40,13 @@ const PatientDashboard = () => {
 			setLoading(true);
 			const data = await appointmentService.fetchAppointments();
 
-			let tempEvents: Appointment[] = [];
+			const tempEvents: Appointment[] = [];
 
 			data.forEach((app) => {
 				if (app.events.length) {
 					app.events.forEach((event: any) => {
 						if (event.patient.toString() === user?._id.toString()) {
-							let tempApp: Appointment = {
+							const tempApp: Appointment = {
 								_id: app._id,
 								eventId: event._id,
 								status: event.status,

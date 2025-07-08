@@ -40,7 +40,7 @@ const DoctorDashboard = () => {
 			const appointments = await appointmentService.fetchAppointments();
 			setAppointments(appointments);
 			if (user?.role === "doctor") {
-				let tempEvents: Appointment[] = [];
+				const tempEvents: Appointment[] = [];
 
 				appointments.forEach((app) => {
 					if (
@@ -53,7 +53,7 @@ const DoctorDashboard = () => {
 
 					if (app.events.length) {
 						app.events.forEach((event: Event) => {
-							let tempApp: Appointment = {
+							const tempApp: Appointment = {
 								_id: app._id,
 								eventId: event._id,
 								status: event.status,
