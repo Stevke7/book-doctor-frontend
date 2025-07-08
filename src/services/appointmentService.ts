@@ -5,7 +5,7 @@ export const appointmentService = {
 	// FETCH ALL APPOINTMENTS
 	fetchAppointments: async (): Promise<Appointment[]> => {
 		try {
-			const { data } = await api.get("/appointments");
+			const { data } = await api.get("/api/appointments");
 			return data;
 		} catch (error) {
 			console.error("Error fetching appointments:", error);
@@ -19,7 +19,7 @@ export const appointmentService = {
 		doctorId: string
 	): Promise<Appointment> => {
 		try {
-			const { data } = await api.post("/appointments", {
+			const { data } = await api.post("/api/appointments", {
 				datetime,
 				doctor: doctorId,
 			});
@@ -33,7 +33,9 @@ export const appointmentService = {
 	//BOOK AN FREE EVENT (FOR PATIENTS)
 	bookAppointment: async (appointmentId: string): Promise<Appointment> => {
 		try {
-			const { data } = await api.post(`/appointments/${appointmentId}/book`);
+			const { data } = await api.post(
+				`/api/appointments/${appointmentId}/book`
+			);
 			return data;
 		} catch (error) {
 			console.error("Error booking appointment:", error);
@@ -47,7 +49,7 @@ export const appointmentService = {
 		eventId: string
 	): Promise<Appointment> => {
 		try {
-			const { data } = await api.patch(`/appointments/${id}/status`, {
+			const { data } = await api.patch(`/api/appointments/${id}/status`, {
 				status: "APPROVED",
 				eventId,
 			});
@@ -64,7 +66,7 @@ export const appointmentService = {
 		eventId: string
 	): Promise<Appointment> => {
 		try {
-			const { data } = await api.patch(`/appointments/${id}/status`, {
+			const { data } = await api.patch(`/api/appointments/${id}/status`, {
 				status: "REJECTED",
 				eventId,
 			});
