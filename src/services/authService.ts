@@ -51,7 +51,7 @@ export const authService = {
 	register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
 		try {
 			const { data } = await api.post<AuthResponse>(
-				"/users/register",
+				"/api/users/register",
 				credentials
 			);
 			if (!data || !data.token || !data.user || !data.user.role) {
