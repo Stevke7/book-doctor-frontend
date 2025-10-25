@@ -2,32 +2,30 @@
 @import "@fontsource/poppins/index.css";
 
 .status-free {
-    background-color: #4CAF50 !important;
-    border: none;
+	background-color: #4caf50 !important;
+	border: none;
 }
 
 .status-pending {
-    background-color: #FFC107 !important;
-    border: none;
+	background-color: #ffc107 !important;
+	border: none;
 }
 
 .status-approved {
-    background-color: #2196F3 !important;
-    border: none;
+	background-color: #2196f3 !important;
+	border: none;
 }
 
 .status-rejected {
-    background-color: #F44336 !important;
-    border: none;
+	background-color: #f44336 !important;
+	border: none;
 }
-
 
 @layer {
-    .bg-hero{
-        background-image: url('/home.jpg');
-    }
-    body {
-       font-family: 'Poppins', sans-serif;
-    }
+	.bg-hero {
+		background-image: url("/hero.jpg ");
+	}
+	body {
+		font-family: "Poppins", sans-serif;
+	}
 }
-
