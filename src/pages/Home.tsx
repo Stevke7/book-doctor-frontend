@@ -1,16 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { Button } from "@mui/material";
+import logo from "../assets/transparent.png";
 
 const Home = () => {
 	return (
 		<>
 			<header className="flex flex-row w-full px-12  py-6 justify-between ">
 				<NavLink to="/">
-					<img
-						src="/src/assets/transparent.png"
-						alt="Book doctor logo"
-						className="w-14"
-					></img>
+					<img src={logo} alt="Book doctor logo" className="w-14"></img>
 				</NavLink>
 				<div className="flex flex-row gap-2">
 					<NavLink to="/login">
