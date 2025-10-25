@@ -7,7 +7,7 @@ const Home = () => {
 			<header className="flex flex-row w-full px-12  py-6 justify-between ">
 				<NavLink to="/">
 					<img
-						src="/public/transparent.png"
+						src="/src/assets/transparent.png"
 						alt="Book doctor logo"
 						className="w-14"
 					></img>
