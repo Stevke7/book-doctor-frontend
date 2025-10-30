@@ -41,7 +41,6 @@ const DoctorDashboard = () => {
 			setAppointments(appointments);
 			if (user?.role === "doctor") {
 				const tempEvents: Appointment[] = [];
-				console.log("Fetched appointments:", appointments);
 
 				appointments.forEach((app) => {
 					if (
